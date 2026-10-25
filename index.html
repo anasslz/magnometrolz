@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculadora de rentabilidad para tiendas Shopify: margen real por venta, CPA máximo, ROAS de equilibrio y ventas mínimas.">
+  <title>Margenómetro | Calculadora de rentabilidad Shopify</title>
+</head>
+<body>
+<style>
+#mg,#mg *{box-sizing:border-box}
+#mg{--bg:#edf3ef;--sf:#fff;--ink:#0f2a22;--mut:#53675f;--ln:#d3ded8;--in:#f6f9f7;--ac:#0a7a52;--bad:#c2362b;--warn:#a96a0c;--c-vat:#9aa8a2;--c-cost:#3b5b8a;--c-ship:#2f8f9d;--c-fee:#b9822a;--c-ads:#7a5cc2;--c-pro:#12a56b;color-scheme:light;max-width:1080px;margin:0 auto;padding:clamp(18px,3.5vw,40px);background:var(--bg);color:var(--ink);border-radius:22px;font:16px/1.55 var(--font-body-family,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);transition:background .25s,color .25s}
+#mg[data-theme=dark]{--bg:#0b1411;--sf:#12201b;--ink:#e6f0eb;--mut:#97aba3;--ln:#243630;--in:#0d1a15;--ac:#3ddc97;--bad:#ff7a6e;--warn:#e9b04a;--c-vat:#5f706a;--c-cost:#6f95d1;--c-ship:#4fb6c4;--c-fee:#d9a441;--c-ads:#a68be3;--c-pro:#3ddc97;color-scheme:dark}
+#mg h1,#mg h2,#mg p,#mg ul,#mg dl,#mg dd{margin:0;padding:0}
+#mg :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+#mg .mg-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+#mg .mg-brand{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:800;letter-spacing:-.02em}
+#mg .mg-g1{fill:none;stroke:var(--ac);stroke-width:5;stroke-linecap:round}
+#mg .mg-g2{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+#mg .mg-g3{fill:var(--ink)}
+#mg .mg-sw{display:inline-flex;align-items:center;gap:10px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-radius:999px;padding:6px 14px 6px 8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+#mg .mg-knob{width:34px;height:20px;border-radius:99px;background:var(--ln);position:relative;transition:background .2s}
+#mg .mg-knob:after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--sf);box-shadow:0 0 0 1px var(--mut);transition:transform .2s}
+#mg [aria-checked=true] .mg-knob{background:var(--ac)}
+#mg [aria-checked=true] .mg-knob:after{transform:translateX(14px)}
+#mg h1{font-size:clamp(28px,5vw,46px);line-height:1.08;letter-spacing:-.03em;font-weight:800;max-width:20em;margin:32px 0 12px}
+#mg .mg-sub{color:var(--mut);font-size:17px;max-width:60ch}
+#mg .mg-grid{display:grid;gap:18px;margin-top:28px;align-items:start}
+#mg .mg-form,#mg .mg-res{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:6px 20px 20px}
+#mg .mg-res{padding-top:20px}
+#mg .mg-grp{padding-top:16px;margin-top:16px;border-top:1px solid var(--ln)}
+#mg .mg-grp:first-child{border-top:0;margin-top:0}
+#mg .mg-gt{font-size:15px;font-weight:700;margin-bottom:10px}
+#mg .mg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#mg .mg-f{margin-bottom:12px}
+#mg .mg-f label{display:block;font-size:14px;font-weight:600;margin-bottom:5px}
+#mg .mg-in{position:relative}
+#mg .mg-in input{width:100%;font:inherit;padding:11px 38px 11px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--in);color:var(--ink)}
+#mg .mg-in span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--mut);pointer-events:none}
+#mg .mg-hint{display:block;color:var(--mut);font-size:13px;margin-top:4px}
+#mg .mg-chk{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+#mg .mg-chk input{width:18px;height:18px;accent-color:var(--ac)}
+#mg .mg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#mg .mg-hero{border-radius:12px;padding:16px 18px;margin-bottom:18px;border:1px solid var(--ln);background:var(--in)}
+#mg .mg-q{font-size:14px;color:var(--mut)}
+#mg .mg-big{font-size:clamp(40px,8vw,64px);line-height:1.05;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;margin:2px 0 4px}
+#mg .mg-hero[data-st=good]{border-color:var(--ac)}
+#mg .mg-hero[data-st=good] .mg-big{color:var(--ac)}
+#mg .mg-hero[data-st=tight]{border-color:var(--warn)}
+#mg .mg-hero[data-st=tight] .mg-big{color:var(--warn)}
+#mg .mg-hero[data-st=loss]{border-color:var(--bad)}
+#mg .mg-hero[data-st=loss] .mg-big{color:var(--bad)}
+#mg .mg-verdict{font-weight:600}
+#mg .mg-bar{display:flex;gap:2px;height:22px;border-radius:99px;overflow:hidden;background:var(--ln)}
+#mg .mg-seg{height:100%;min-width:3px}
+#mg .mg-c-vat{background:var(--c-vat)}
+#mg .mg-c-cost{background:var(--c-cost)}
+#mg .mg-c-ship{background:var(--c-ship)}
+#mg .mg-c-fee{background:var(--c-fee)}
+#mg .mg-c-ads{background:var(--c-ads)}
+#mg .mg-c-pro{background:var(--c-pro)}
+#mg .mg-leg{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 18px;margin:14px 0 20px;font-size:14px}
+#mg .mg-leg li{display:flex;align-items:center;gap:8px}
+#mg .mg-dot{width:10px;height:10px;border-radius:3px;flex:none}
+#mg .mg-ln{flex:1;color:var(--mut)}
+#mg .mg-leg strong,#mg .mg-pc{font-variant-numeric:tabular-nums}
+#mg .mg-pc{color:var(--mut);min-width:3.8em;text-align:right}
+#mg .mg-neg{color:var(--bad)}
+#mg .mg-kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#mg .mg-kpi div{border:1px solid var(--ln);border-radius:12px;padding:12px 14px}
+#mg .mg-kpi dt{font-size:13px;color:var(--mut)}
+#mg .mg-kpi dd{font-size:clamp(18px,3vw,22px);font-weight:700;font-variant-numeric:tabular-nums}
+#mg .mg-tip{margin-top:14px;font-size:14px;color:var(--mut)}
+#mg .mg-seo{margin-top:36px;max-width:760px}
+#mg .mg-seo h2{font-size:22px;letter-spacing:-.02em;margin-bottom:12px}
+#mg .mg-seo details{border-top:1px solid var(--ln);padding:12px 0}
+#mg .mg-seo details:last-of-type{border-bottom:1px solid var(--ln)}
+#mg .mg-seo summary{display:flex;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;font-weight:600}
+#mg .mg-seo summary::-webkit-details-marker{display:none}
+#mg .mg-seo summary:after{content:"+";color:var(--ac);font-weight:800}
+#mg .mg-seo details[open] summary:after{content:"\2212"}
+#mg .mg-seo details p{margin-top:8px;color:var(--mut)}
+#mg .mg-fine{margin-top:14px;font-size:13px;color:var(--mut)}
+@media (min-width:860px){
+  #mg .mg-grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+  #mg .mg-res{position:sticky;top:88px}
+}
+@media (max-width:420px){
+  #mg .mg-row{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  #mg,#mg *,#mg *:after{transition:none!important}
+}
+</style>
+
+<div id="mg" data-theme="light">
+  <div class="mg-top">
+    <div class="mg-brand">
+      <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path class="mg-g1" d="M6 30a14 14 0 0 1 28 0"/><path class="mg-g2" d="M20 30l7-10"/><circle class="mg-g3" cx="20" cy="30" r="3.2"/></svg>
+      <span>Margenómetro</span>
+    </div>
+    <button type="button" id="mg-theme" class="mg-sw" role="switch" aria-checked="false"><span class="mg-knob" aria-hidden="true"></span>Modo oscuro</button>
+  </div>
+
+  <h1>Margenómetro: la calculadora de rentabilidad para tu tienda Shopify</h1>
+  <p class="mg-sub">Mete el coste, el envío, las comisiones y la publicidad. Te decimos cuánto te queda de verdad en cada venta y cuántas ventas necesitas al mes para no perder dinero.</p>
+  <noscript><p class="mg-fine">Activa JavaScript para usar la calculadora.</p></noscript>
+
+  <div class="mg-grid">
+    <div class="mg-form">
+      <div class="mg-grp" role="group" aria-labelledby="mg-g-1">
+        <h2 class="mg-gt" id="mg-g-1">La venta</h2>
+        <div class="mg-row">
+          <div class="mg-f"><label for="mg-price">Precio de venta</label><div class="mg-in"><input id="mg-price" type="text" inputmode="decimal" autocomplete="off" value="29,90"><span class="mg-cur">€</span></div></div>
+          <div class="mg-f"><label for="mg-vat">IVA</label><div class="mg-in"><input id="mg-vat" type="text" inputmode="decimal" autocomplete="off" value="21"><span>%</span></div></div>
+        </div>
+        <label class="mg-chk"><input type="checkbox" id="mg-incl" checked> El precio ya incluye IVA</label>
+      </div>
+
+      <div class="mg-grp" role="group" aria-labelledby="mg-g-2">
+        <h2 class="mg-gt" id="mg-g-2">Costes de cada venta</h2>
+        <div class="mg-row">
+          <div class="mg-f"><label for="mg-cost">Coste del producto</label><div class="mg-in"><input id="mg-cost" type="text" inputmode="decimal" autocomplete="off" value="8,50"><span class="mg-cur">€</span></div></div>
+          <div class="mg-f"><label for="mg-ship">Envío que pagas tú</label><div class="mg-in"><input id="mg-ship" type="text" inputmode="decimal" autocomplete="off" value="3,90"><span class="mg-cur">€</span></div></div>
+        </div>
+        <div class="mg-row">
+          <div class="mg-f"><label for="mg-feep">Comisión de pago</label><div class="mg-in"><input id="mg-feep" type="text" inputmode="decimal" autocomplete="off" value="2,9"><span>%</span></div></div>
+          <div class="mg-f"><label for="mg-feef">Comisión fija por pedido</label><div class="mg-in"><input id="mg-feef" type="text" inputmode="decimal" autocomplete="off" value="0,30"><span class="mg-cur">€</span></div></div>
+        </div>
+        <small class="mg-hint">Las comisiones se aplican sobre el precio final con IVA. Si cobras envío al cliente, réstalo del envío que pagas tú.</small>
+      </div>
+
+      <div class="mg-grp" role="group" aria-labelledby="mg-g-3">
+        <h2 class="mg-gt" id="mg-g-3">Publicidad y gastos fijos</h2>
+        <div class="mg-f"><label for="mg-cpa">Publicidad por venta (CPA)</label><div class="mg-in"><input id="mg-cpa" type="text" inputmode="decimal" autocomplete="off" value="7,00"><span class="mg-cur">€</span></div><small class="mg-hint">Lo que te cuesta cada venta en anuncios: gasto en publicidad ÷ ventas.</small></div>
+        <div class="mg-f"><label for="mg-fixed">Gastos fijos al mes</label><div class="mg-in"><input id="mg-fixed" type="text" inputmode="decimal" autocomplete="off" value="300"><span class="mg-cur">€</span></div><small class="mg-hint">Plan de Shopify, apps, anuncios fijos… Déjalo en 0 si no los tienes.</small></div>
+      </div>
+    </div>
+
+    <section class="mg-res" aria-labelledby="mg-rt">
+      <h2 class="mg-sr" id="mg-rt">Resultado de rentabilidad</h2>
+      <div class="mg-hero" id="mg-hero" data-st="none" aria-live="polite">
+        <p class="mg-q">Te quedan por venta</p>
+        <p class="mg-big" id="mg-profit">—</p>
+        <p class="mg-verdict" id="mg-verdict"></p>
+      </div>
+      <div class="mg-bar" id="mg-bar" role="img"></div>
+      <ul class="mg-leg" id="mg-leg"></ul>
+      <dl class="mg-kpi">
+        <div><dt>Margen real</dt><dd id="mg-k-margin">—</dd></div>
+        <div><dt>Ventas mínimas al mes</dt><dd id="mg-k-units">—</dd></div>
+        <div><dt>CPA máximo</dt><dd id="mg-k-cpa">—</dd></div>
+        <div><dt>ROAS de equilibrio</dt><dd id="mg-k-roas">—</dd></div>
+      </dl>
+      <p class="mg-tip" id="mg-tip"></p>
+    </section>
+  </div>
+
+  <section class="mg-seo">
+    <h2>Preguntas frecuentes sobre la rentabilidad en Shopify</h2>
+    <details><summary>¿Cómo se calcula el margen real de un producto?</summary><p>Al precio sin IVA se le resta todo lo que te cuesta vender una unidad: el coste del producto, el envío que pagas, las comisiones de la pasarela de pago y la publicidad por venta. Lo que queda es el beneficio por unidad, y dividido entre el precio sin IVA es tu margen real en porcentaje.</p></details>
+    <details><summary>¿Cuántas ventas necesito para no perder dinero?</summary><p>Es tu punto de equilibrio: los gastos fijos del mes (plan de Shopify, apps, anuncios fijos…) divididos entre el beneficio de cada venta. Por debajo de esas unidades al mes pierdes dinero y por encima ganas.</p></details>
+    <details><summary>¿Qué son el CPA máximo y el ROAS de equilibrio?</summary><p>El CPA máximo es lo más que puedes pagar en anuncios por cada venta sin perder dinero: el margen que te queda antes de publicidad. El ROAS de equilibrio es el retorno mínimo que debe dar tu publicidad para igualar ese CPA, es decir, el precio final dividido entre el CPA máximo.</p></details>
+    <details><summary>¿Las comisiones de pago se calculan sobre el precio con IVA?</summary><p>Normalmente sí. Pasarelas como Shopify Payments, PayPal o Stripe cobran un porcentaje más una cantidad fija sobre el importe total que paga el cliente, con IVA incluido, por eso Margenómetro las aplica sobre el precio final. Revisa las tarifas de tu plan y tu país.</p></details>
+    <p class="mg-fine">Margenómetro ofrece estimaciones orientativas. Confirma las cifras con tu gestor antes de tomar decisiones.</p>
+  </section>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Margenómetro",
+  "description": "Calculadora de rentabilidad para tiendas Shopify: margen real por venta, CPA máximo, ROAS de equilibrio y ventas mínimas para no perder dinero.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "es",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (i) { return document.getElementById(i); };
+  var root = $('mg');
+  var CUR = 'EUR';
+  var LOC = 'es-ES';
+  var nf, pf, rf;
+  try {
+    nf = new Intl.NumberFormat(LOC, { style: 'currency', currency: CUR });
+    pf = new Intl.NumberFormat(LOC, { maximumFractionDigits: 1 });
+    rf = new Intl.NumberFormat(LOC, { maximumFractionDigits: 2 });
+  } catch (e) {
+    nf = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+    pf = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
+    rf = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+  }
+  var SYM = '€';
+  try { SYM = nf.formatToParts(0).filter(function (p) { return p.type === 'currency'; })[0].value; } catch (e) {}
+  Array.prototype.forEach.call(root.querySelectorAll('.mg-cur'), function (s) { s.textContent = SYM; });
+
+  /* ---------- Modo claro / oscuro ---------- */
+  var KEY = 'mg-theme', btn = $('mg-theme');
+  function setTheme(t, save) {
+    root.setAttribute('data-theme', t);
+    btn.setAttribute('aria-checked', String(t === 'dark'));
+    if (save) { try { localStorage.setItem(KEY, t); } catch (e) {} }
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  setTheme(saved === 'dark' || saved === 'light' ? saved : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'), false);
+  btn.addEventListener('click', function () { setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true); });
+
+  /* ---------- Cálculo ---------- */
+  function num(id) {
+    var v = parseFloat(String($('mg-' + id).value).replace(/\s/g, '').replace(',', '.'));
+    return isFinite(v) && v > 0 ? v : 0;
+  }
+  function model(i) {
+    var vat = i.vat / 100;
+    var net = i.incl ? i.price / (1 + vat) : i.price;
+    var gross = i.incl ? i.price : i.price * (1 + vat);
+    var fee = i.price > 0 ? gross * i.feep / 100 + i.feef : 0;
+    var pre = net - i.cost - i.ship - fee;
+    var profit = pre - i.cpa;
+    return {
+      net: net, gross: gross, vat: gross - net, fee: fee, pre: pre, profit: profit,
+      margin: net > 0 ? profit / net * 100 : 0,
+      units: profit > 0 ? Math.ceil(i.fixed / profit) : null,
+      roas: pre > 0 ? gross / pre : null
+    };
+  }
+
+  /* ---------- Pintado ---------- */
+  var PARTS = [['vat', 'IVA'], ['cost', 'Producto'], ['ship', 'Envío'], ['fee', 'Comisiones'], ['ads', 'Publicidad'], ['pro', 'Beneficio']];
+  var VERDICT = { loss: 'Pierdes dinero en cada venta', tight: 'Margen ajustado: cualquier imprevisto te lo come', good: 'Buen margen: este producto es rentable' };
+  function el(t, c, x) {
+    var e = document.createElement(t);
+    if (c) e.className = c;
+    if (x != null) e.textContent = x;
+    return e;
+  }
+  function render() {
+    var i = { price: num('price'), vat: num('vat'), incl: $('mg-incl').checked, cost: num('cost'), ship: num('ship'),
+      feep: num('feep'), feef: num('feef'), cpa: num('cpa'), fixed: num('fixed') };
+    var hero = $('mg-hero'), bar = $('mg-bar'), leg = $('mg-leg');
+    bar.innerHTML = ''; leg.innerHTML = '';
+    if (!i.price) {
+      hero.setAttribute('data-st', 'none');
+      $('mg-profit').textContent = '—';
+      $('mg-verdict').textContent = 'Introduce el precio de venta para ver el resultado.';
+      ['margin', 'units', 'cpa', 'roas'].forEach(function (k) { $('mg-k-' + k).textContent = '—'; });
+      $('mg-tip').textContent = '';
+      return;
+    }
+    var m = model(i), st = m.profit <= 0 ? 'loss' : m.margin < 10 ? 'tight' : 'good';
+    var vals = { vat: m.vat, cost: i.cost, ship: i.ship, fee: m.fee, ads: i.cpa, pro: m.profit };
+    var total = Math.max(m.gross, m.vat + i.cost + i.ship + m.fee + i.cpa);
+    var desc = [];
+    PARTS.forEach(function (p) {
+      var v = vals[p[0]], w = Math.max(v, 0) / total * 100;
+      var label = p[0] === 'pro' && v < 0 ? 'Pérdida' : p[1];
+      if (w > 0) { var s = el('span', 'mg-seg mg-c-' + p[0]); s.style.width = w + '%'; bar.appendChild(s); }
+      var li = el('li');
+      li.appendChild(el('span', 'mg-dot mg-c-' + p[0]));
+      li.appendChild(el('span', 'mg-ln', label));
+      var a = el('strong', v < 0 ? 'mg-neg' : null, nf.format(v));
+      li.appendChild(a);
+      li.appendChild(el('span', 'mg-pc', pf.format(v / m.gross * 100) + ' %'));
+      leg.appendChild(li);
+      desc.push(label + ' ' + nf.format(v));
+    });
+    bar.setAttribute('aria-label', 'Reparto de los ' + nf.format(m.gross) + ' que paga el cliente: ' + desc.join(', '));
+
+    hero.setAttribute('data-st', st);
+    $('mg-profit').textContent = nf.format(m.profit);
+    $('mg-verdict').textContent = VERDICT[st];
+    $('mg-k-margin').textContent = pf.format(m.margin) + ' %';
+    $('mg-k-units').textContent = m.units === null ? '—' : m.units === 0 ? 'Desde la 1.ª venta' : String(m.units);
+    $('mg-k-cpa').textContent = m.pre > 0 ? nf.format(m.pre) : '—';
+    $('mg-k-roas').textContent = m.roas ? rf.format(m.roas) + '×' : '—';
+    $('mg-tip').textContent = m.pre <= 0
+      ? 'Ni sin publicidad cubres coste, envío y comisiones. Sube el precio o baja los costes.'
+      : m.profit <= 0
+        ? 'Tu CPA supera el máximo de ' + nf.format(m.pre) + ': la publicidad se come todo el margen.'
+        : i.fixed > 0
+          ? 'Con ' + m.units + ' ventas al mes cubres ' + nf.format(i.fixed) + ' de gastos fijos. A partir de ahí, cada venta suma ' + nf.format(m.profit) + '.'
+          : 'Sin gastos fijos, cada venta suma ' + nf.format(m.profit) + ' desde la primera.';
+  }
+
+  ['price', 'vat', 'cost', 'ship', 'feep', 'feef', 'cpa', 'fixed'].forEach(function (id) { $('mg-' + id).addEventListener('input', render); });
+  $('mg-incl').addEventListener('change', render);
+  render();
+})();
+</script>
+</body>
+</html>
